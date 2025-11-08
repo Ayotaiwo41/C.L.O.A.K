@@ -23,9 +23,9 @@ st.write("")
 st.write("")
 
 col1, col2 = st.columns([1, 1])
+
 with col1:
-    if st.button("← Back to Inspiration", use_container_width=True):
-        st.switch_page("pages/3_Inspiration.py")
+    st.page_link("pages/3_Inspiration.py", label="← Back to Inspiration")
+
 with col2:
-    if st.button("Start Over", use_container_width=True):
-        st.switch_page("Home.py")
+    st.page_link("Home.py", label="Start Over", icon="🏠")
