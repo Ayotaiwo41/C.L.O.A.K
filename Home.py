@@ -1,26 +1,15 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="C.L.O.A.K.fit",
-    page_icon="👔",
-    layout="wide"
-)
+st.set_page_config(page_title="c.l.o.a.k.fit — Outfit Maker", layout="centered")
 
-if 'uploaded_images' not in st.session_state:
-    st.session_state.uploaded_images = []
-if 'selected_styles' not in st.session_state:
-    st.session_state.selected_styles = []
-if 'favorites' not in st.session_state:
-    st.session_state.favorites = []
+st.title("👗 c.l.o.a.k.fit — Outfit Maker")
+st.write("""
+Welcome to **Outfit Maker** — upload clothes to your closet, choose a style, 
+and get outfit suggestions powered by AI.
+""")
 
-st.title("C.L.O.A.K.fit")
-st.subheader("Your AI-Powered Personal Stylist")
+st.markdown("---")
+st.subheader("Getting Started")
+st.write("Click below to begin building your closet.")
 
-st.write("")
-st.write("Transform your closet into endless outfit possibilities with AI")
-st.write("")
-st.write("")
-
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    st.page_link("1_Your_Closet.py", label="🚀 Get Started", icon="👕")
+st.page_link("pages/1_Your_Closet.py", label="🚀 Get Started", icon="✨")
