@@ -26,4 +26,4 @@ st.write("")
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col2:
-    st.page_link("pages/1_Your_Closet.py", label="🚀 Get Started", icon="👕")
+    st.page_link("1_Your_Closet.py", label="🚀 Get Started", icon="👕")
