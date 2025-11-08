@@ -25,7 +25,7 @@ st.write("")
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.page_link("pages/3_Inspiration.py", label="← Back to Inspiration")
+    st.page_link("4_Favorites.py", label="View Favorites")
 
 with col2:
-    st.page_link("Home.py", label="Start Over", icon="🏠")
+    st.page_link("Home.py", label="🏠 Start Over")
