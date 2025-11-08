@@ -34,7 +34,7 @@ st.write("")
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     if st.button("← Back", use_container_width=True):
-        st.switch_page("main.py")
+        st.switch_page("home.py")
 with col3:
     if st.button("Next →", use_container_width=True, type="primary", disabled=len(st.session_state.uploaded_images)==0):
         st.switch_page("2_Your_Outfits.py")
