@@ -8,7 +8,6 @@ st.set_page_config(
 
 st.title("Your Closet")
 st.write("Upload images of your clothes")
-
 st.write("")
 
 uploaded_files = st.file_uploader(
@@ -32,9 +31,10 @@ st.write("")
 st.write("")
 
 col1, col2, col3 = st.columns([1, 1, 1])
+
 with col1:
-    if st.button("← Back", use_container_width=True):
-        st.switch_page("Home.py")
+    st.page_link("Home.py", label="← Back")
+
 with col3:
-    if st.button("Next →", use_container_width=True, type="primary", disabled=len(st.session_state.uploaded_images)==0):
-        st.switch_page("pages/2_Your_Outfits.py")
+    disabled = len(st.session_state.get("uploaded_images", [])) == 0
+    st.page_link("pages/2_Your_Outfits.py", label="Next →", disabled=disabled, icon="✨")
