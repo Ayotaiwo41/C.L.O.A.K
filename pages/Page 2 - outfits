@@ -1,74 +1,49 @@
 import streamlit as st
+import random
+import base64
 
-st.set_page_config(
-    page_title="Your Outfits - C.L.O.A.K.fit",
-    page_icon="👔",
-    layout="wide"
-)
+st.title("🪞 Outfit Recommendations")
 
-st.title("Your Outfits")
+if "closet_items" not in st.session_state or not st.session_state.closet_items:
+    st.warning("No closet items found. Go to 'Your Closet' and upload at least one item.")
+    st.page_link("pages/1_Your_Closet.py", label="⬅️ Go to Closet")
+    st.stop()
 
-st.subheader("Select Your Style:")
+st.write("Choose a style, then generate simple outfit combinations.")
 
-col1, col2, col3, col4 = st.columns(4)
+styles = ["Y2K", "Streetwear", "Old Money"]
+style = st.radio("Select your style:", styles)
+st.session_state.selected_style = style
 
-with col1:
-    if st.button("Y2K", use_container_width=True):
-        if "Y2K" not in st.session_state.selected_styles:
-            st.session_state.selected_styles.append("Y2K")
-        else:
-            st.session_state.selected_styles.remove("Y2K")
-        st.rerun()
+def make_mock_outfit(item_bytes, style):
+    accessories = {
+        "Y2K": ["sparkly choker", "chunky sneakers"],
+        "Streetwear": ["high-top sneakers", "layered tee"],
+        "Old Money": ["loafers", "silk scarf"]
+    }
+    acc = random.choice(accessories.get(style, ["belt"]))
+    return {
+        "item": item_bytes,
+        "desc": f"{style} look — paired with {acc}."
+    }
 
-with col2:
-    if st.button("Streetwear", use_container_width=True):
-        if "Streetwear" not in st.session_state.selected_styles:
-            st.session_state.selected_styles.append("Streetwear")
-        else:
-            st.session_state.selected_styles.remove("Streetwear")
-        st.rerun()
+if st.button("Generate Outfits"):
+    st.session_state.outfit_cards = [
+        make_mock_outfit(b, style) for b, _ in st.session_state.closet_items
+    ]
 
-with col3:
-    if st.button("Old Money", use_container_width=True):
-        if "Old Money" not in st.session_state.selected_styles:
-            st.session_state.selected_styles.append("Old Money")
-        else:
-            st.session_state.selected_styles.remove("Old Money")
-        st.rerun()
+if "outfit_cards" in st.session_state:
+    st.write("### Suggested Outfits")
+    for outfit in st.session_state.outfit_cards:
+        st.image(outfit["item"], width=200)
+        st.write(outfit["desc"])
+        if st.button("💖 Save to Favorites", key=outfit["desc"]):
+            if "favorites" not in st.session_state:
+                st.session_state.favorites = []
+            data_uri = "data:image/png;base64," + base64.b64encode(outfit["item"]).decode()
+            st.session_state.favorites.append({"image": data_uri, "desc": outfit["desc"]})
+            st.success("Added to Favorites!")
 
-with col4:
-    if st.button("Casual", use_container_width=True):
-        if "Casual" not in st.session_state.selected_styles:
-            st.session_state.selected_styles.append("Casual")
-        else:
-            st.session_state.selected_styles.remove("Casual")
-        st.rerun()
-
-if st.session_state.selected_styles:
-    st.write(f"Selected: {', '.join(st.session_state.selected_styles)}")
-
-st.write("")
-st.divider()
-st.write("")
-
-if st.session_state.selected_styles:
-    st.subheader("Recommended Outfits:")
-    cols = st.columns(3)
-    for i in range(3):
-        with cols[i]:
-            st.write(f"**Outfit {i+1}**")
-            if st.session_state.uploaded_images:
-                for img in st.session_state.uploaded_images[:2]:
-                    st.image(img, use_column_width=True)
-            st.write(f"Style: {st.session_state.selected_styles[0] if st.session_state.selected_styles else 'Mixed'}")
-
-st.write("")
-st.write("")
-
-col1, col2, col3 = st.columns([1, 1, 1])
-
-with col1:
-    st.page_link("2_Your_Outfits.py", label="Next →")
-
-with col3:
-    st.page_link("pages/3_Inspiration.py", label="Browse Inspiration →", icon="✨")
+st.markdown("---")
+st.page_link("pages/1_Your_Closet.py", label="⬅️ Back to Closet")
+st.page_link("pages/3_Style_Gallery.py", label="➡️ Go to Style Gallery")
