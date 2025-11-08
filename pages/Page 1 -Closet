@@ -1,40 +1,31 @@
 import streamlit as st
+from PIL import Image
+import io
 
-st.set_page_config(
-    page_title="Your Closet - C.L.O.A.K.fit",
-    page_icon="👔",
-    layout="wide"
-)
+st.title("🧥 Your Closet")
+st.write("Upload your clothing items below. They’ll be saved in your session for recommendations.")
 
-st.title("Your Closet")
-st.write("Upload images of your clothes")
-st.write("")
+if "closet_items" not in st.session_state:
+    st.session_state.closet_items = []
 
-uploaded_files = st.file_uploader(
-    "Choose images", 
-    type=['png', 'jpg', 'jpeg'],
-    accept_multiple_files=True
-)
+def image_to_bytes(img):
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
 
-if uploaded_files:
-    st.session_state.uploaded_images = uploaded_files
-    
-    st.write("")
-    st.subheader("Your Items:")
-    
+uploaded = st.file_uploader("Upload clothing image", type=["png", "jpg", "jpeg"])
+if uploaded:
+    img = Image.open(uploaded).convert("RGBA")
+    st.image(img, caption="Uploaded item preview", use_column_width=True)
+    st.session_state.closet_items.append((image_to_bytes(img), uploaded.name))
+    st.success("Added to your session closet!")
+
+if st.session_state.closet_items:
+    st.write("**Your Closet Items:**")
     cols = st.columns(4)
-    for idx, image in enumerate(uploaded_files):
-        with cols[idx % 4]:
-            st.image(image, use_column_width=True)
+    for i, (b, name) in enumerate(st.session_state.closet_items):
+        cols[i % 4].image(b, width=150, caption=name)
 
-st.write("")
-st.write("")
-
-col1, col2, col3 = st.columns([1, 1, 1])
-
-with col1:
-    st.page_link("1_Your_Closet.py", label="← Back")
-
-with col3:
-    disabled = len(st.session_state.get("uploaded_images", [])) == 0
-    st.page_link("pages/2_Your_Outfits.py", label="Next →", disabled=disabled, icon="✨")
+st.markdown("---")
+st.page_link("Home.py", label="🏠 Back to Home")
+st.page_link("pages/2_Outfit_Recommendations.py", label="➡️ Get Recommendations")
