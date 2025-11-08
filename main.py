@@ -38,5 +38,5 @@ st.write("")
 
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    if st.button("🚀 Get Started", use_container_width=True, type="primary"):
+    if st.button("Get Started", use_container_width=True, type="primary"):
         st.switch_page("pages/1_Your_Closet.py")
