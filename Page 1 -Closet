@@ -1,5 +1,7 @@
 import streamlit as st
 
+streamlit run main.py
+
 st.set_page_config(
     page_title="Your Closet - C.L.O.A.K.fit",
     page_icon="👔",
