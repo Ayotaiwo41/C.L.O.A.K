@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="c.l.o.a.k.fit — Outfit Maker", layout="centered")
 
-st.title("👗 c.l.o.a.k.fit — Outfit Maker")
+st.title("c.l.o.a.k")
 st.write("""
 Welcome to **Outfit Maker** — upload clothes to your closet, choose a style, 
 and get outfit suggestions powered by AI.
