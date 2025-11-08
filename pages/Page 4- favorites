@@ -1,31 +1,18 @@
 import streamlit as st
 
-st.set_page_config(
-    page_title="Favorites - C.L.O.A.K.fit",
-    page_icon="👔",
-    layout="wide"
-)
+st.title("💾 Favorites")
 
-st.title("Your Favorites")
+if "favorites" not in st.session_state or not st.session_state.favorites:
+    st.info("No favorites saved yet.")
+    st.page_link("pages/3_Style_Gallery.py", label="⬅️ Back to Gallery")
+    st.stop()
 
-if st.session_state.favorites:
-    cols = st.columns(3)
-    for idx, img_url in enumerate(st.session_state.favorites):
-        with cols[idx % 3]:
-            st.image(img_url, use_column_width=True)
-            if st.button(f"Remove", key=f"remove_{idx}"):
-                st.session_state.favorites.remove(img_url)
-                st.rerun()
-else:
-    st.write("No favorites yet. Go browse some inspiration!")
+for i, fav in enumerate(st.session_state.favorites):
+    st.image(fav["image"], width=300, caption=fav.get("desc", f"Favorite {i+1}"))
+    if st.button("🗑 Remove", key=f"remove_{i}"):
+        st.session_state.favorites.pop(i)
+        st.experimental_rerun()
 
-st.write("")
-st.write("")
-
-col1, col2 = st.columns([1, 1])
-
-with col1:
-    st.page_link("4_Favorites.py", label="View Favorites")
-
-with col2:
-    st.page_link("Home.py", label="🏠 Start Over")
+st.markdown("---")
+st.page_link("pages/3_Style_Gallery.py", label="⬅️ Back to Gallery")
+st.page_link("Home.py", label="🏠 Back to Home")
