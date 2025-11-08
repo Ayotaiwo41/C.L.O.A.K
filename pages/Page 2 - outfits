@@ -68,7 +68,7 @@ st.write("")
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
-    st.page_link("pages/1_Your_Closet.py", label="← Back")
+    st.page_link("2_Your_Outfits.py", label="Next →")
 
 with col3:
     st.page_link("pages/3_Inspiration.py", label="Browse Inspiration →", icon="✨")
