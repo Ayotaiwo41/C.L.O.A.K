@@ -1,0 +1,75 @@
+import streamlit as st
+
+st.set_page_config(
+    page_title="Your Outfits - C.L.O.A.K.fit",
+    page_icon="👔",
+    layout="wide"
+)
+
+st.title("Your Outfits")
+
+st.subheader("Select Your Style:")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    if st.button("Y2K", use_container_width=True):
+        if 'Y2K' not in st.session_state.selected_styles:
+            st.session_state.selected_styles.append('Y2K')
+        else:
+            st.session_state.selected_styles.remove('Y2K')
+        st.rerun()
+        
+with col2:
+    if st.button("Streetwear", use_container_width=True):
+        if 'Streetwear' not in st.session_state.selected_styles:
+            st.session_state.selected_styles.append('Streetwear')
+        else:
+            st.session_state.selected_styles.remove('Streetwear')
+        st.rerun()
+        
+with col3:
+    if st.button("Old Money", use_container_width=True):
+        if 'Old Money' not in st.session_state.selected_styles:
+            st.session_state.selected_styles.append('Old Money')
+        else:
+            st.session_state.selected_styles.remove('Old Money')
+        st.rerun()
+        
+with col4:
+    if st.button("Casual", use_container_width=True):
+        if 'Casual' not in st.session_state.selected_styles:
+            st.session_state.selected_styles.append('Casual')
+        else:
+            st.session_state.selected_styles.remove('Casual')
+        st.rerun()
+
+if st.session_state.selected_styles:
+    st.write(f"Selected: {', '.join(st.session_state.selected_styles)}")
+
+st.write("")
+st.divider()
+st.write("")
+
+if st.session_state.selected_styles:
+    st.subheader("Recommended Outfits:")
+    
+    cols = st.columns(3)
+    for i in range(3):
+        with cols[i]:
+            st.write(f"**Outfit {i+1}**")
+            if st.session_state.uploaded_images:
+                for img in st.session_state.uploaded_images[:2]:
+                    st.image(img, use_column_width=True)
+            st.write(f"Style: {st.session_state.selected_styles[0] if st.session_state.selected_styles else 'Mixed'}")
+
+st.write("")
+st.write("")
+
+col1, col2, col3 = st.columns([1, 1, 1])
+with col1:
+    if st.button("← Back", use_container_width=True):
+        st.switch_page("pages/1_Your_Closet.py")
+with col3:
+    if st.button("Browse Inspiration →", use_container_width=True, type="primary"):
+        st.switch_page("pages/3_Inspiration.py")
