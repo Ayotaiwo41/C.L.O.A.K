@@ -37,4 +37,4 @@ with col1:
         st.switch_page("main.py")
 with col3:
     if st.button("Next →", use_container_width=True, type="primary", disabled=len(st.session_state.uploaded_images)==0):
-        st.switch_page("pages/2_Your_Outfits.py")
+        st.switch_page("2_Your_Outfits.py")
