@@ -8,10 +8,8 @@ st.set_page_config(
 
 if 'uploaded_images' not in st.session_state:
     st.session_state.uploaded_images = []
-
 if 'selected_styles' not in st.session_state:
     st.session_state.selected_styles = []
-
 if 'favorites' not in st.session_state:
     st.session_state.favorites = []
 
@@ -24,6 +22,5 @@ st.write("")
 st.write("")
 
 col1, col2, col3 = st.columns([1, 1, 1])
-
 with col2:
     st.page_link("1_Your_Closet.py", label="🚀 Get Started", icon="👕")
