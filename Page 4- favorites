@@ -28,4 +28,4 @@ with col1:
         st.switch_page("3_Inspiration.py")
 with col2:
     if st.button("Start Over", use_container_width=True):
-        st.switch_page("main.py")
+        st.switch_page("home.py")
