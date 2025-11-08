@@ -43,9 +43,9 @@ st.write("")
 st.write("")
 
 col1, col2, col3 = st.columns([1, 1, 1])
+
 with col1:
-    if st.button("← Back to Outfits", use_container_width=True):
-        st.switch_page("pages/2_Your_Outfits.py")
+    st.page_link("pages/2_Your_Outfits.py", label="← Back to Outfits")
+
 with col3:
-    if st.button("View Favorites", use_container_width=True, type="primary"):
-        st.switch_page("pages/4_Favorites.py")
+    st.page_link("pages/4_Favorites.py", label="View Favorites", icon="⭐")
