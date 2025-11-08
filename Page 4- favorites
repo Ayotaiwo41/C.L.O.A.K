@@ -20,8 +20,8 @@ else:
     st.write("No favorites yet. Go browse some inspiration!")
 
 st.write("")
-st.write(""
-)
+st.write("")
+
 col1, col2 = st.columns([1, 1])
 with col1:
     if st.button("← Back to Inspiration", use_container_width=True):
