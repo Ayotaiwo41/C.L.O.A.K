@@ -145,7 +145,7 @@ else:
 st.markdown("---")
 col1, col2 = st.columns(2)
 with col1:
-    st.page_link("main.py", label="🏠 Back to Home")
+    st.page_link("home.py", label="🏠 Back to Home")
 with col2:
     if st.session_state.closet_items:
         st.page_link("pages/2_Outfit_Recommendations.py", label="➡️ Get Recommendations")
