@@ -288,4 +288,4 @@ with col1:
 with col2:
     st.page_link("pages/2_Outfit_Recommendations.py", label="🔄 Get More Outfits")
 with col3:
-    st.page_link("main.py", label="🏠 Back to Home")
+    st.page_link("home.py", label="🏠 Back to Home")
