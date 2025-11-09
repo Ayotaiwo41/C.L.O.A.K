@@ -27,5 +27,5 @@ if st.session_state.closet_items:
         cols[i % 4].image(b, width=150, caption=name)
 
 st.markdown("---")
-st.page_link("Home.py", label="🏠 Back to Home")
+st.page_link("../Home.py", label="🏠 Back to Home")
 st.page_link("pages/2_Outfit_Recommendations.py", label="➡️ Get Recommendations")
