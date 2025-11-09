@@ -1,87 +1,188 @@
 import streamlit as st
-import random
 import base64
+import requests
+import json
 
-st.title("🪞 Outfit Recommendations")
+st.title("🪞 AI Outfit Recommendations")
 
 if "closet_items" not in st.session_state or not st.session_state.closet_items:
     st.warning("No closet items found. Go to 'Your Closet' and upload at least one item.")
     st.page_link("pages/1_Your_Closet.py", label="⬅️ Go to Closet")
     st.stop()
 
-st.write("Choose a style, then generate outfit combinations using items from your closet.")
+st.write("Choose a style, and our AI will create perfect outfit combinations from your closet items.")
 
-styles = ["Y2K", "Streetwear", "Old Money"]
-style = st.radio("Select your style:", styles)
+# Style selection
+styles = ["Y2K", "Streetwear", "Old Money", "Casual Chic"]
+style = st.radio("Select your style:", styles, horizontal=True)
 st.session_state.selected_style = style
 
-def make_outfit_combination(closet_items, style, outfit_num):
-    """Create an outfit by combining 2-3 items from the closet"""
-    accessories = {
-        "Y2K": ["sparkly choker", "chunky sneakers", "butterfly clips"],
-        "Streetwear": ["high-top sneakers", "layered tee", "snapback cap"],
-        "Old Money": ["loafers", "silk scarf", "leather belt"]
-    }
-    
-    # Shuffle and pick 2-3 items for this outfit
-    num_items = min(len(closet_items), random.randint(2, 3))
-    outfit_items = random.sample(closet_items, num_items)
-    
-    acc = random.choice(accessories.get(style, ["belt"]))
-    
-    return {
-        "items": outfit_items,  # List of (bytes, filename) tuples
-        "desc": f"{style} Outfit #{outfit_num} — paired with {acc}",
-        "style": style
-    }
+# Display closet summary
+st.info(f"🧥 Using {len(st.session_state.closet_items)} items from your closet")
 
-if st.button("Generate Outfits", type="primary"):
+def generate_ai_outfits(closet_items, style, num_outfits=3):
+    """Use Claude AI to generate smart outfit combinations"""
+    try:
+        # Prepare clothing inventory for AI
+        inventory = []
+        for idx, item in enumerate(closet_items):
+            analysis = item.get('analysis', {})
+            inventory.append({
+                "id": idx,
+                "type": analysis.get('type', 'unknown'),
+                "color": analysis.get('color', 'unknown'),
+                "style": analysis.get('style', 'unknown'),
+                "description": analysis.get('description', '')
+            })
+        
+        # Create prompt for AI
+        prompt = f"""You are a professional fashion stylist. Based on the following clothing items, create {num_outfits} complete {style} outfits.
+
+Available clothing items:
+{json.dumps(inventory, indent=2)}
+
+Requirements:
+- Each outfit should have 2-4 compatible items
+- Consider color coordination, style matching, and the {style} aesthetic
+- Provide styling tips for each outfit
+- Respond ONLY with a JSON array (no markdown, no preamble) in this format:
+
+[
+  {{
+    "outfit_number": 1,
+    "item_ids": [0, 2, 3],
+    "why_it_works": "Brief explanation of why these items work together",
+    "styling_tips": "How to wear this outfit",
+    "occasion": "Best occasion for this outfit"
+  }}
+]"""
+
+        # Call Claude API
+        response = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "Content-Type": "application/json",
+                "x-api-key": st.secrets["ANTHROPIC_API_KEY"]
+            },
+            json={
+                "model": "claude-sonnet-4-20250514",
+                "max_tokens": 2000,
+                "messages": [{
+                    "role": "user",
+                    "content": prompt
+                }]
+            }
+        )
+        
+        data = response.json()
+        
+        # Extract text content
+        text_content = ""
+        for block in data.get("content", []):
+            if block.get("type") == "text":
+                text_content += block.get("text", "")
+        
+        # Parse JSON response
+        text_content = text_content.strip()
+        # Remove markdown code blocks if present
+        if text_content.startswith("```"):
+            text_content = text_content.split("```")[1]
+            if text_content.startswith("json"):
+                text_content = text_content[4:]
+        
+        outfits = json.loads(text_content.strip())
+        
+        # Build outfit objects with actual items
+        result = []
+        for outfit in outfits:
+            outfit_items = [closet_items[i] for i in outfit["item_ids"] if i < len(closet_items)]
+            result.append({
+                "items": outfit_items,
+                "why_it_works": outfit.get("why_it_works", ""),
+                "styling_tips": outfit.get("styling_tips", ""),
+                "occasion": outfit.get("occasion", ""),
+                "style": style
+            })
+        
+        return result
+        
+    except Exception as e:
+        st.error(f"AI outfit generation failed: {str(e)}")
+        return []
+
+# Generate outfits button
+if st.button("🤖 Generate AI Outfits", type="primary", use_container_width=True):
     # Check if we have enough items
     if len(st.session_state.closet_items) < 2:
         st.warning("Please upload at least 2 items to generate outfit combinations!")
     else:
-        # Generate 3 different outfit combinations
-        st.session_state.outfit_cards = [
-            make_outfit_combination(st.session_state.closet_items, style, i+1) 
-            for i in range(3)
-        ]
-        st.success("✨ Outfits generated!")
+        with st.spinner("🎨 AI is creating your perfect outfits..."):
+            # Generate AI-powered outfits
+            st.session_state.outfit_cards = generate_ai_outfits(
+                st.session_state.closet_items, 
+                style,
+                num_outfits=3
+            )
+            
+            if st.session_state.outfit_cards:
+                st.success("✨ Your outfits are ready!")
+            else:
+                st.error("Failed to generate outfits. Please try again.")
 
+# Display generated outfits
 if "outfit_cards" in st.session_state and st.session_state.outfit_cards:
-    st.write("### 👗 Suggested Outfits")
-    
-    # Display in columns for better layout
-    cols = st.columns(3)
+    st.markdown("---")
+    st.subheader("👗 Your AI-Generated Outfits")
     
     for idx, outfit in enumerate(st.session_state.outfit_cards):
-        with cols[idx % 3]:
-            st.write(f"**Outfit {idx + 1}**")
-            
-            # Display all items in the outfit
-            for item_bytes, filename in outfit["items"]:
-                st.image(item_bytes, use_column_width=True)
-            
-            st.write(outfit["desc"])
-            
-            # Use index-based unique key instead of description
+        st.markdown(f"### Outfit {idx + 1}")
+        
+        # Display outfit items in columns
+        cols = st.columns(len(outfit["items"]))
+        for i, item in enumerate(outfit["items"]):
+            with cols[i]:
+                st.image(item["image_bytes"], use_column_width=True)
+                analysis = item.get('analysis', {})
+                st.caption(f"**{analysis.get('type', 'Item').title()}**")
+                st.caption(f"{analysis.get('color', '')} {analysis.get('style', '')}")
+        
+        # Display AI insights
+        with st.expander("💡 AI Styling Insights", expanded=True):
+            st.write(f"**Why it works:** {outfit.get('why_it_works', 'N/A')}")
+            st.write(f"**Styling tips:** {outfit.get('styling_tips', 'N/A')}")
+            st.write(f"**Best for:** {outfit.get('occasion', 'N/A')}")
+        
+        # Action buttons
+        col1, col2 = st.columns(2)
+        with col1:
             if st.button("💖 Save to Favorites", key=f"save_outfit_{idx}", use_container_width=True):
                 if "favorites" not in st.session_state:
                     st.session_state.favorites = []
                 
-                # Save the entire outfit with all items
+                # Save the entire outfit with all items and AI insights
                 outfit_data = {
                     "items": [
-                        "data:image/png;base64," + base64.b64encode(item_bytes).decode()
-                        for item_bytes, _ in outfit["items"]
+                        {
+                            "image": "data:image/png;base64," + base64.b64encode(item["image_bytes"]).decode(),
+                            "analysis": item.get("analysis", {})
+                        }
+                        for item in outfit["items"]
                     ],
-                    "desc": outfit["desc"],
+                    "why_it_works": outfit.get("why_it_works", ""),
+                    "styling_tips": outfit.get("styling_tips", ""),
+                    "occasion": outfit.get("occasion", ""),
                     "style": outfit["style"]
                 }
                 st.session_state.favorites.append(outfit_data)
                 st.success("Added to Favorites!")
-            
-            st.divider()
+        
+        with col2:
+            if st.button("🔄 Regenerate This Outfit", key=f"regen_{idx}", use_container_width=True):
+                st.info("Regenerating outfits... Click 'Generate AI Outfits' again!")
+        
+        st.divider()
 
+# Navigation
 st.markdown("---")
 col1, col2 = st.columns(2)
 with col1:
