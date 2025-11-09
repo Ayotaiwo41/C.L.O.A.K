@@ -15,4 +15,4 @@ for i, fav in enumerate(st.session_state.favorites):
 
 st.markdown("---")
 st.page_link("pages/3_Style_Gallery.py", label="⬅️ Back to Gallery")
-st.page_link("../Home.py", label="🏠 Back to Home")
+st.page_link("../home.py", label="🏠 Back to Home")
